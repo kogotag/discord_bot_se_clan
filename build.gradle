@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+group 'ru.kogotag'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
+}
+compileJava.options.encoding = "UTF-8"
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.0'
+    implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.12.5'
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation("net.dv8tion:JDA:4.3.0_331")
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'ru.kogotag.Main'
+        )
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': "ru.kogotag.Main"
+    }
+    archiveBaseName = "discord_bot_se_clan"
+    from {
+        configurations.compileClasspath
+                .findAll { !it.name.endsWith('pom') }
+                .collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    with jar
+}
